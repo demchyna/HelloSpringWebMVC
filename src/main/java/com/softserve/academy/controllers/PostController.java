@@ -1,6 +1,5 @@
 package com.softserve.academy.controllers;
 
-
 import com.softserve.academy.models.Post;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -26,13 +25,14 @@ public class PostController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("isAuthenticated() and hasRole('WRITER')")
     public Post create(@RequestBody Post post) {
+        posts.add(post);
         return post;
     }
 
     @GetMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated()")
-    @PostAuthorize("hasRole('WRITER') or (hasRole('READER') and returnObject.userId == authentication.details.userId)")
+    @PostAuthorize("(hasRole('WRITER') or hasRole('READER')) and returnObject.userId == authentication.details.id")
     public Post read(@PathVariable int id) {
         for (Post post : posts) {
             if (post.getId() == id) return post;
@@ -43,7 +43,7 @@ public class PostController {
     @DeleteMapping("/posts")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated() and " +
-            "(hasRole('WRITER') or (hasRole('READER') and #post.userId == authentication.details.userId))")
+            "(hasRole('WRITER') or hasRole('READER')) and #post.userId == authentication.details.id")
     public void delete(@RequestBody Post post) {
         for (Post item : posts) {
             if (item.equals(post))

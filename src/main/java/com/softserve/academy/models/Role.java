@@ -15,7 +15,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return authority;
+        return authority.toUpperCase();
     }
 
     public void setAuthority(String authority) {

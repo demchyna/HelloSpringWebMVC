@@ -34,7 +34,7 @@ public class WebAuthenticationFilter extends AbstractAuthenticationProcessingFil
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String token = request.getHeader("Authorization");
         if (token != null) {
-            Authentication authentication = new UserAuthentication(token);
+            Authentication authentication = new UserAuthentication(token, new UserDetails());
             return getAuthenticationManager().authenticate(authentication);
         } else {
             throw new BadCredentialsException("Token is not found");

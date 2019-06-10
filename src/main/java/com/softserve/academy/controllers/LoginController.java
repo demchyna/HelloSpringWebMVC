@@ -21,14 +21,12 @@ public class LoginController {
     @Autowired
     public LoginController(BCryptPasswordEncoder passwordEncoder) {
         this.bCryptPasswordEncoder = passwordEncoder;
-        users.add(new User(1,
-                "mike",
+        users.add(new User(1, "mike",
                 bCryptPasswordEncoder.encode("1111"),
-                Arrays.asList(new Role("WRITER"), new Role("READER"))));
-        users.add(new User(2,
-                "nick",
+                Arrays.asList(new Role("ROLE_WRITER"), new Role("ROLE_READER"))));
+        users.add(new User(2, "nick",
                 bCryptPasswordEncoder.encode("2222"),
-                Collections.singletonList(new Role("READER"))));
+                Collections.singletonList(new Role("ROLE_READER"))));
     }
 
     @PostMapping("/login")

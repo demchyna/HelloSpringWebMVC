@@ -8,41 +8,32 @@ import java.util.Collection;
 public class UserAuthentication implements Authentication {
 
     private String token;
-    private int userId;
-    private String userName;
-    private Collection<? extends GrantedAuthority> userRoles;
+    private UserDetails userDetails;
     private boolean authenticated;
 
-    public UserAuthentication(String token) {
+    public UserAuthentication(String token, UserDetails userDetails) {
         this.token = token;
-    }
-
-    public void setUserRoles(Collection<? extends GrantedAuthority> userRoles) {
-        this.userRoles = userRoles;
+        this.userDetails = userDetails;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userRoles;
+        return userDetails.getRoles();
     }
 
     @Override
     public Object getCredentials() {
-        return null;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
+        return new UserCredentials(userDetails.getUsername(), userDetails.getPassword());
     }
 
     @Override
     public Object getDetails() {
-        return userId;
+        return userDetails;
     }
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return userDetails;
     }
 
     @Override
@@ -55,16 +46,16 @@ public class UserAuthentication implements Authentication {
         this.authenticated = isAuthenticated;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     @Override
     public String getName() {
-        return userName;
+        return userDetails.getUsername();
     }
 
     public String getToken() {
         return token;
+    }
+
+    public UserDetails getUserDetails() {
+        return userDetails;
     }
 }

@@ -9,8 +9,7 @@ public class Post {
     private Date date;
     private int userId;
 
-    public Post(int id) {
-        this.id = id;
+    public Post() {
     }
 
     public Post(int id, String text, Date date, int userId) {
@@ -20,12 +19,12 @@ public class Post {
         this.userId = userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getText() {
@@ -50,16 +49,6 @@ public class Post {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", date=" + date +
-                ", userId=" + userId +
-                '}';
     }
 
     @Override

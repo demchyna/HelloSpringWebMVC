@@ -11,7 +11,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 
 @Component
 public class WebAuthenticationManager implements AuthenticationManager {
@@ -22,22 +21,21 @@ public class WebAuthenticationManager implements AuthenticationManager {
         UserAuthentication userAuthentication = (UserAuthentication) authentication;
 
         try {
-            userAuthentication.setUserId(JwtUtility.getUserIdFromToken(userAuthentication.getToken()));
-            userAuthentication.setUserName(JwtUtility.getUsernameFromToken(userAuthentication.getToken()));
+            userAuthentication.getUserDetails().setId(JwtUtility.getUserIdFromToken(userAuthentication.getToken()));
+            userAuthentication.getUserDetails().setUsername(JwtUtility.getUsernameFromToken(userAuthentication.getToken()));
 
             Collection<Role> authorities = new ObjectMapper().convertValue(
                     JwtUtility.getRolesFromToken(userAuthentication.getToken()),
                     new TypeReference<Collection<Role>>() { }
             );
 
-            userAuthentication.setUserRoles(authorities);
+            userAuthentication.getUserDetails().setRoles(authorities);
 
             userAuthentication.setAuthenticated(true);
 
         } catch (SignatureException | ExpiredJwtException exception) {
             throw new RuntimeException(exception.getMessage());
         }
-
         return userAuthentication;
     }
 }
