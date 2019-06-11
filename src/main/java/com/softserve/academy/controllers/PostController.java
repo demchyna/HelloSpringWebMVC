@@ -40,14 +40,26 @@ public class PostController {
         throw new RuntimeException("Post not found");
     }
 
-    @DeleteMapping("/posts")
+    @PutMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("isAuthenticated() and " +
             "(hasRole('WRITER') or hasRole('READER')) and #post.userId == authentication.details.id")
-    public void delete(@RequestBody Post post) {
+    public Post update(@PathVariable int id, @RequestBody Post post) {
         for (Post item : posts) {
-            if (item.equals(post))
-                posts.remove(post);
+            if (item.getId() == id)
+                return posts.set(posts.indexOf(item), post);
+        }
+        throw new RuntimeException("Post not found");
+    }
+
+    @DeleteMapping("/posts/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated() and " +
+            "(hasRole('WRITER') or hasRole('READER')) and #id == authentication.details.id")
+    public void delete(@PathVariable int id) {
+        for (Post item : posts) {
+            if (item.getId() == id)
+                posts.remove(id);
         }
         throw new RuntimeException("Post not found");
     }

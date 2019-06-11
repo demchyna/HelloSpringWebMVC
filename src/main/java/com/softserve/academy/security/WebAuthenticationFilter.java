@@ -1,5 +1,6 @@
 package com.softserve.academy.security;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,8 +21,15 @@ import java.io.IOException;
 @Component
 public class WebAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+    private Logger logger;
+
     public WebAuthenticationFilter(@Value("/api/**") String filterProcessesUrl) {
         super(new AntPathRequestMatcher(filterProcessesUrl));
+    }
+
+    @Autowired
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
     @Override
@@ -31,14 +39,19 @@ public class WebAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String token = request.getHeader("Authorization");
         if (token != null) {
             Authentication authentication = new UserAuthentication(token, new UserDetails());
             return getAuthenticationManager().authenticate(authentication);
         } else {
-            throw new BadCredentialsException("Token is not found");
+            try {
+                throw new BadCredentialsException("Token is not found");
+            } catch (BadCredentialsException exception) {
+                logger.error(exception.getMessage(), exception);
+            }
         }
+        return null;
     }
 
     @Override
@@ -49,7 +62,8 @@ public class WebAuthenticationFilter extends AbstractAuthenticationProcessingFil
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
         SecurityContextHolder.clearContext();
+        logger.error(exception.getMessage(), exception);
     }
 }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softserve.academy.models.Role;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -14,6 +16,13 @@ import java.util.Collection;
 
 @Component
 public class WebAuthenticationManager implements AuthenticationManager {
+
+    private Logger logger;
+
+    @Autowired
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -34,7 +43,7 @@ public class WebAuthenticationManager implements AuthenticationManager {
             userAuthentication.setAuthenticated(true);
 
         } catch (SignatureException | ExpiredJwtException exception) {
-            throw new RuntimeException(exception.getMessage());
+            logger.error(exception.getMessage(), exception);
         }
         return userAuthentication;
     }
